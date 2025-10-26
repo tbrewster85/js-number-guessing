@@ -6,13 +6,51 @@ const messageEl = document.querySelector('#message');
 const testBtn = document.querySelector('#testBtn');
 
 messageEl.textContent = 'JavaScript is running in the browser and can update the DOM.';
+console.log('messageEl:', messageEl);
+
+
+// const handleClick = 
+
+
+// () => {
+//   console.log('handleClick');
+//   const now = new Date().toLocaleTimeString();
+//   messageEl.textContent = `Button clicked at ${now}. JS handled the event.`;
+// }
 
 // 2) Event-driven behavior: react to a user action
-testBtn.addEventListener('click', () => {
-  const now = new Date().toLocaleTimeString();
-  messageEl.textContent = `Button clicked at ${now}. JS handled the event.`;
-  console.log('Button click handled:', now);
-});
+testBtn.addEventListener('click', 
+  () => {
+    console.log('handleClick');
+    const now = new Date().toLocaleTimeString();
+    messageEl.textContent = `Button clicked at ${now}. JS handled the event.`;
+  }
+);
+
+const myArray = [
+  'apple',
+  'banana',
+  'cherry',
+  'date',
+  'elderberry',
+  'fig',
+  'grape',
+  'honeydew',
+  'kiwi',
+]
+
+// looping through an array
+for (const item of myArray) {
+  console.log(item);
+}
+
+// picking a random item from an array
+Math.random() // returns a random number between 0 and 1
+Math.floor(Math.random() * myArray.length) // returns a random integer between 0 and the length of the array
+const randomItem = myArray[Math.floor(Math.random() * myArray.length)];
+myArray[Math.floor(Math.random() * myArray.length)]
+
+
 
 // 3) Quick type tour (browser Console will show the results)
 const samples = [42, '42', true, undefined, null, Symbol('x'), 123n];
