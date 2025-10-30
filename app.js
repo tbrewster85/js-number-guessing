@@ -1,70 +1,134 @@
-// app.js — Kickoff: where JavaScript runs and how it connects to the page
+// Number Guessing Game — Core App
 
-// 1) Proof the JS file loaded and runs after HTML (thanks to defer)
-console.log('app.js loaded');
-const messageEl = document.querySelector('#message');
-const testBtn = document.querySelector('#testBtn');
+// Settings (use const for values that do not change)
+const MIN = 1;
+const MAX = 100;
+const MAX_ATTEMPTS = 10;
 
-messageEl.textContent = 'JavaScript is running in the browser and can update the DOM.';
-console.log('messageEl:', messageEl);
+// Cache DOM elements once (efficient and readable)
+const elGuess = document.querySelector('#guess');
+const elSubmit = document.querySelector('#submit');
+const elReset = document.querySelector('#reset');
+const elStatus = document.querySelector('#status');
+const elAttempts = document.querySelector('#attempts');
+const elHearts = document.querySelector('#hearts');
+const elRange = document.querySelector('#range');
 
+// Game state (use let for values that change)
+let secret = makeSecret(MIN, MAX);
+let attempts = 0;
+let gameOver = false;
 
-// const handleClick = 
+// Initial UI
+elRange.textContent = `I picked a number between ${MIN} and ${MAX}.`;
+renderAttempts();
+setStatus('Make your first guess!', 'ok');
+elGuess.focus();
 
+// Event listeners (event-driven behavior)
+elSubmit.addEventListener('click', handleGuess);
+elReset.addEventListener('click', resetGame);
+elGuess.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleGuess();
+});
 
-// () => {
-//   console.log('handleClick');
-//   const now = new Date().toLocaleTimeString();
-//   messageEl.textContent = `Button clicked at ${now}. JS handled the event.`;
-// }
+// Handle a guess: validation, comparison, and feedback
+function handleGuess() {
+  if (gameOver) return;
 
-// 2) Event-driven behavior: react to a user action
-testBtn.addEventListener('click', 
-  () => {
-    console.log('handleClick');
-    const now = new Date().toLocaleTimeString();
-    messageEl.textContent = `Button clicked at ${now}. JS handled the event.`;
+  const raw = elGuess.value;   // strings come from inputs
+  if (!raw.trim()) {
+    setStatus('Please enter a value.', 'warn');
+    return;
   }
-);
 
-const myArray = [
-  'apple',
-  'banana',
-  'cherry',
-  'date',
-  'elderberry',
-  'fig',
-  'grape',
-  'honeydew',
-  'kiwi',
-]
+  const num = Number(raw);     // convert to number
+  if (Number.isNaN(num)) {
+    setStatus('That is not a number.', 'err');
+    return;
+  }
 
-// looping through an array
-for (const item of myArray) {
-  console.log(item);
+  if (num < MIN || num > MAX) {
+    setStatus(`Enter a number between ${MIN} and ${MAX}.`, 'warn');
+    return;
+  }
+
+  // Valid guess: count it
+  attempts++;
+
+  // Compare using strict equality and relational operators
+  if (num === secret) {
+    setStatus(`You got it in ${attempts} ${pluralize('try', attempts)}!`, 'ok');
+    gameOver = true;
+  } else if (num < secret) {
+    setStatus('Too low. Try a larger number.', 'warn');
+  } else {
+    setStatus('Too high. Try a smaller number.', 'warn');
+  }
+
+  // Added feedback for >5 attempts
+
+  if (attempts >= 5) {
+    if (Math.abs(num - secret) <= 10) {
+      setStatus(`Hint: within 10 `, 'warn');
+    }
+  }
+
+
+
+  renderAttempts();
+
+  // Check end condition (max attempts)
+  if (!gameOver && attempts >= MAX_ATTEMPTS) {
+    setStatus(`Out of tries. The number was ${secret}.`, 'err');
+    gameOver = true;
+  }
+
+  elGuess.select();
 }
 
-// picking a random item from an array
-Math.random() // returns a random number between 0 and 1
-Math.floor(Math.random() * myArray.length) // returns a random integer between 0 and the length of the array
-const randomItem = myArray[Math.floor(Math.random() * myArray.length)];
-myArray[Math.floor(Math.random() * myArray.length)]
-
-
-
-// 3) Quick type tour (browser Console will show the results)
-const samples = [42, '42', true, undefined, null, Symbol('x'), 123n];
-for (const value of samples) {
-  console.log('typeof', value, '=>', typeof value);
+// Reset the game to a fresh state
+function resetGame() {
+  secret = makeSecret(MIN, MAX);
+  attempts = 0;
+  gameOver = false;
+  elGuess.value = '';
+  setStatus('New round. Make a guess!', 'ok');
+  renderAttempts();
+  elGuess.focus();
 }
 
-// 4) Browser vs Node mental model (try these in Console and Node REPL)
-console.log('In browser: typeof window =', typeof window);     // object
-console.log('In browser: typeof document =', typeof document); // object
-// In Node REPL, document is undefined: try typing `typeof document`
-// Note: document and window are provided by the browser (the DOM), not by Node.
+// Helpers
 
-// 5) Where code runs summary (read-only comments):
-// - This file runs in the browser because of <script defer src="app.js"></script> in index.html
-// - You can also run JavaScript snippets in the DevTools Console (View > Developer > Console).
-// - Node.js runs JavaScript outside the browser (no DOM). Use: `node` in your terminal.
+function makeSecret(min, max) {
+  // Math.random() returns [0,1); scale and shift to min..max
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function pluralize(word, count) {
+  // Small decision with switch
+  switch (count) {
+    case 1: return word;
+    default: return `${word}s`;
+  }
+}
+
+function renderAttempts() {
+  elAttempts.textContent = `Attempts: ${attempts}`;
+
+  // Loop to render one heart per remaining attempt
+  const remaining = Math.max(0, MAX_ATTEMPTS - attempts);
+  let hearts = '';
+  for (let i = 0; i < remaining; i++) {
+    hearts += '❤️';
+  }
+  elHearts.textContent = hearts;
+}
+
+function setStatus(message, kind) {
+  elStatus.textContent = message;
+  elStatus.classList.remove('status-ok', 'status-warn', 'status-err');
+  if (kind === 'ok') elStatus.classList.add('status-ok');
+  if (kind === 'warn') elStatus.classList.add('status-warn');
+  if (kind === 'err') elStatus.classList.add('status-err');
+}

@@ -11,24 +11,17 @@
 <body>
     <main class="container">
         <h1>Number Guessing Game</h1>
+  <p id="range">I picked a number between 1 and 100.</p>
 
-        <section>
-            <h2 class="sr-only">About</h2>
-            <p id="about">
-                HTML provides structure, CSS styles it, and JavaScript adds behavior.
-            </p>
-            <p id="message">Waiting for JavaScript to update this message...</p>
-            <button id="testBtn">Test JavaScript</button>
-        </section>
-        
-        <section>
-            <h2 class="sr-only">Where JS Runs</h2>
-            <ul>
-                <li>In the browser (this page) via a script tag</li>
-                <li>In the browser Console (DevTools)</li>
-                <li>Outside the browser using Node.js</li>
-            </ul>
-        </section>
+  <div class="controls">
+    <input id="guess" type="number" placeholder="Enter your guess" />
+    <button id="submit">Guess</button>
+    <button id="reset">Reset</button>
+  </div>
+
+  <p id="status">Make your first guess!</p>
+  <p id="attempts">Attempts: 0</p>
+  <div id="hearts" aria-label="attempts remaining"></div>
     </main>
 </body>
 </html>
