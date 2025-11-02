@@ -60,6 +60,7 @@ function handleGuess() {
   if (num === secret) {
     setStatus(`You got it in ${attempts} ${pluralize('try', attempts)}!`, 'ok');
     gameOver = true;
+    return;
   } else if (num < secret) {
     setStatus('Too low. Try a larger number.', 'warn');
   } else {
@@ -132,3 +133,4 @@ function setStatus(message, kind) {
   if (kind === 'warn') elStatus.classList.add('status-warn');
   if (kind === 'err') elStatus.classList.add('status-err');
 }
+
